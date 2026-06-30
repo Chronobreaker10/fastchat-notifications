@@ -32,8 +32,14 @@ class DatabaseConfig(BaseModel):
     name: str = "notifications"
 
 
+class KafkaConfig(BaseModel):
+    bootstrap_servers: list[str] = ["localhost:9092"]
+    notifications_topic: str = "notifications"
+
+
 class Settings(BaseSettings):
     database: DatabaseConfig
+    kafka: KafkaConfig = Field(default_factory=KafkaConfig)
     # security: SecurityConfig
     env: Literal["prod", "dev", "test"] = "dev"
     default_limit: int = 10

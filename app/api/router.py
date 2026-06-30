@@ -1,8 +1,13 @@
 from api import service
 from api.schemas import NotificationCreate, NotificationRead, NotificationUpdate
-from fastapi import APIRouter
+from core.config import settings
+from faststream.kafka.fastapi.fastapi import KafkaRouter
 
-router = APIRouter(prefix="/notifications", tags=["Уведомления"])
+router = KafkaRouter(
+    bootstrap_servers=settings.kafka.bootstrap_servers,
+    prefix="/notifications",
+    tags=["Уведомления"],
+)
 
 
 @router.post("/notifications", response_model=NotificationRead)
@@ -20,3 +25,8 @@ async def view_notification(notification_id: str) -> NotificationRead:
     return await service.update_notification(
         notification_id, NotificationUpdate(is_viewed=True)
     )
+
+
+@router.subscriber(settings.kafka.notifications_topic)
+async def receive_notification(notification: NotificationCreate) -> None:
+    await service.create_notification(notification)
