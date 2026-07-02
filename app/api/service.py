@@ -1,5 +1,5 @@
-from api.errors import NotificationNotFoundError
-from api.schemas import NotificationCreate, NotificationRead, NotificationUpdate
+from api.errors import ForbiddenError, NotificationNotFoundError
+from api.schemas import NotificationCreate, NotificationRead, NotificationUpdate, User
 from core.models import Notification
 
 
@@ -23,9 +23,11 @@ async def delete_notification(notification_id: str) -> str:
 
 
 async def update_notification(
-    notification_id: str, data: NotificationUpdate
+    notification_id: str, data: NotificationUpdate, current_user: User
 ) -> NotificationRead:
     notification = await get_notification(notification_id)
+    if notification.recipient_id != current_user.id:
+        raise ForbiddenError
     result = await notification.set(data.model_dump())
     return NotificationRead(**result.model_dump(exclude={"id"}), id=str(result.id))
 

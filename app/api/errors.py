@@ -19,6 +19,19 @@ class NotificationNotFoundError(BaseHTTPError):
         self.message = f"Уведомление с ID {notification_id} не найдено"
 
 
+class UnauthorizedError(BaseHTTPError):
+    code: int = status.HTTP_401_UNAUTHORIZED
+    message: str = "Для доступа к ресурсу необходимо авторизоваться"
+
+    def __init__(self) -> None:
+        self.headers = {"WWW-Authenticate": "Bearer"}
+
+
+class ForbiddenError(BaseHTTPError):
+    code: int = status.HTTP_403_FORBIDDEN
+    message: str = "У вас недостаточно прав для выполнения этого действия"
+
+
 async def handle_base_http_error(_: Request, exc: BaseHTTPError) -> JSONResponse:
     return JSONResponse(
         status_code=exc.code,

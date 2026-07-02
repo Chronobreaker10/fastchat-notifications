@@ -1,7 +1,17 @@
+from functools import cached_property
+from pathlib import Path
 from typing import Literal
 
 from pydantic import BaseModel, Field, MongoDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+SECRET_KEYS_DIR = BASE_DIR / "secret_keys"
+
+Path(SECRET_KEYS_DIR).mkdir(
+    parents=True,
+    exist_ok=True,
+)
 
 
 class ApiConfig(BaseModel):
@@ -24,7 +34,7 @@ class CorsConfig(BaseModel):
 class RunConfig(BaseModel):
     scheme: Literal["http", "https"] = "http"
     host: str = "localhost"
-    port: int = 8000
+    port: int = 8001
 
 
 class DatabaseConfig(BaseModel):
@@ -37,10 +47,20 @@ class KafkaConfig(BaseModel):
     notifications_topic: str = "notifications"
 
 
+class SecurityConfig(BaseModel):
+    access_token_cookie_name: str = "fastchat_access_token"
+    algorithm: str
+
+    @cached_property
+    def public_key(self) -> str:
+        with Path.open(SECRET_KEYS_DIR / "public.pem") as file:
+            return file.read()
+
+
 class Settings(BaseSettings):
     database: DatabaseConfig
     kafka: KafkaConfig = Field(default_factory=KafkaConfig)
-    # security: SecurityConfig
+    security: SecurityConfig
     env: Literal["prod", "dev", "test"] = "dev"
     default_limit: int = 10
     websockets_limit_per_user: int = 20

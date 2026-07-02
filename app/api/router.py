@@ -1,4 +1,5 @@
 from api import service
+from api.dependencies import CurrentUserDep
 from api.schemas import NotificationCreate, NotificationRead, NotificationUpdate
 from core.config import settings
 from faststream.kafka.fastapi.fastapi import KafkaRouter
@@ -15,15 +16,19 @@ async def create_notification(notification: NotificationCreate) -> NotificationR
     return await service.create_notification(notification)
 
 
-@router.get("/notifications/{user_id}", response_model=list[NotificationRead])
-async def get_user_notifications(user_id: int) -> list[NotificationRead]:
-    return await service.get_user_unviewed_notifications(user_id)
+@router.get("/notifications", response_model=list[NotificationRead])
+async def get_user_notifications(
+    current_user: CurrentUserDep,
+) -> list[NotificationRead]:
+    return await service.get_user_unviewed_notifications(current_user.id)
 
 
 @router.patch("/notifications/{notification_id}", response_model=NotificationRead)
-async def view_notification(notification_id: str) -> NotificationRead:
+async def view_notification(
+    notification_id: str, current_user: CurrentUserDep
+) -> NotificationRead:
     return await service.update_notification(
-        notification_id, NotificationUpdate(is_viewed=True)
+        notification_id, NotificationUpdate(is_viewed=True), current_user
     )
 
 
