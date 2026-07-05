@@ -45,6 +45,8 @@ class DatabaseConfig(BaseModel):
 class KafkaConfig(BaseModel):
     bootstrap_servers: list[str] = ["localhost:9092"]
     notifications_topic: str = "notifications"
+    notifications_group: str = "notifications"
+    fanout_notifications_topic: str = "fanout-notifications"
 
 
 class SecurityConfig(BaseModel):

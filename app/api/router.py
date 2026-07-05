@@ -1,3 +1,5 @@
+from faststream import AckPolicy
+
 from api import service
 from api.dependencies import CurrentUserDep
 from api.schemas import NotificationCreate, NotificationRead, NotificationUpdate
@@ -32,6 +34,12 @@ async def view_notification(
     )
 
 
-@router.subscriber(settings.kafka.notifications_topic)
-async def receive_notification(notification: NotificationCreate) -> None:
-    await service.create_notification(notification)
+@router.subscriber(settings.kafka.notifications_topic, group_id=settings.kafka.notifications_group, ack_policy=AckPolicy.ACK)
+@router.publisher(settings.kafka.fanout_notifications_topic)
+async def receive_notification(notification: NotificationCreate) -> NotificationRead:
+    return await service.create_notification(notification)
+
+
+@router.subscriber(settings.kafka.fanout_notifications_topic)
+async def send_notification(notification: NotificationRead) -> None:
+    print(f"Отправляем {notification} в очередь SSE")
