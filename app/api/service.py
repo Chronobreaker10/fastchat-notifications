@@ -10,8 +10,8 @@ async def get_notification(notification_id: str) -> Notification:
     return notification
 
 
-async def create_notification(notification: NotificationCreate) -> NotificationRead:
-    notification = Notification(**notification.model_dump())
+async def create_notification(data: NotificationCreate) -> NotificationRead:
+    notification = Notification(**data.model_dump())
     result = await notification.insert()
     return NotificationRead(**result.model_dump(exclude={"id"}), id=str(result.id))
 

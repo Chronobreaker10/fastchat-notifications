@@ -1,9 +1,13 @@
+from __future__ import annotations
+
 from datetime import datetime
+from functools import cache
 from typing import Annotated
 
 from api.errors import UnauthorizedError
 from api.schemas import User
 from core.config import settings
+from core.pubsub_notifications import PubSubNotifications
 from core.security import validate_token
 from fastapi import Cookie, Depends
 
@@ -25,4 +29,10 @@ async def get_current_user(
     )
 
 
+@cache
+async def get_pubsub() -> PubSubNotifications:
+    return PubSubNotifications()
+
+
 CurrentUserDep = Annotated[User, Depends(get_current_user)]
+PubSubNotificationsDep = Annotated[PubSubNotifications, Depends(get_pubsub)]

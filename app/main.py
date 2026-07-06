@@ -21,4 +21,9 @@ app.include_router(router)
 setup_exceptions(app)
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host=settings.run_config.host, port=settings.run_config.port, workers=3)
+    uvicorn.run(
+        "main:app",
+        host=settings.run_config.host,
+        port=settings.run_config.port,
+        workers=3,
+    )

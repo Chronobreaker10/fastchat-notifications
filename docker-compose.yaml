@@ -4,7 +4,7 @@ services:
   mongo:
     image: mongo:latest
     container_name: mongodb_container
-    restart: always
+    restart: unless-stopped
     ports:
       - "27017:27017"
     environment:
@@ -16,7 +16,7 @@ services:
   mongo-express:
     image: mongo-express:latest
     container_name: mongo_express_container
-    restart: always
+    restart: unless-stopped
     ports:
       - "8081:8081"
     environment:
@@ -29,5 +29,16 @@ services:
     depends_on:
       - mongo
 
+  kafka:
+    image: apache/kafka:latest
+    container_name: fastchat_kafka
+    restart: unless-stopped
+    ports:
+      - "9092:9092"
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+
 volumes:
   mongo-data:
+  kafka_data:
+    driver: local
