@@ -54,3 +54,7 @@ class User(BaseModel):
             description="Зарегистрировался",
         ),
     ]
+
+
+class StatusResponse(BaseModel):
+    success: Annotated[bool, Field(title="Статус ответа")]

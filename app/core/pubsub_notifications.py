@@ -13,12 +13,16 @@ class PubSubNotifications:
 
     async def subscribe(self, user: UserID, channel: ChannelID) -> asyncio.Queue:
         queue = asyncio.Queue()
-        self._subscribers[user][channel] = queue
+        if not self._subscribers.get(user):
+            self._subscribers[user] = {channel: queue}
+        else:
+            self._subscribers[user][channel] = queue
         return queue
 
     async def unsubscribe(self, user: UserID, channel: ChannelID) -> None:
         self._subscribers[user].pop(channel)
 
     async def publish(self, notification: NotificationRead) -> None:
-        for queue in self._subscribers[notification.recipient_id].values():
-            await queue.put(notification)
+        if channels := self._subscribers.get(notification.recipient_id):
+            for queue in channels.values():
+                await queue.put(notification)

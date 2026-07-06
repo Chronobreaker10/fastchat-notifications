@@ -30,7 +30,7 @@ async def get_current_user(
 
 
 @cache
-async def get_pubsub() -> PubSubNotifications:
+def get_pubsub() -> PubSubNotifications:
     return PubSubNotifications()
 
 
