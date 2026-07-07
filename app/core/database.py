@@ -1,7 +1,8 @@
 from beanie import init_beanie
-from core.config import settings
-from core.models import Notification
 from pymongo import AsyncMongoClient
+
+from .config import settings
+from .models import Notification
 
 
 async def setup_beanie() -> None:

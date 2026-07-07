@@ -1,6 +1,43 @@
-version: '3.8'
-
 services:
+  fastapi:
+    build: .
+    container_name: fastchat_notifications
+    restart: unless-stopped
+    env_file:
+      - .env.docker
+    volumes:
+      - logs:/app/logs
+    depends_on:
+      - mongo
+    ports:
+      - "8001:8000"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/docs', timeout=3)",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
+        reservations:
+          memory: 256M
+    networks:
+      - fastchat-net
+
   mongo:
     image: mongo:latest
     container_name: mongodb_container
@@ -12,6 +49,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: secretpassword
     volumes:
       - mongo-data:/data/db
+    networks:
+      - fastchat-net
 
   mongo-express:
     image: mongo-express:latest
@@ -28,17 +67,15 @@ services:
       ME_CONFIG_BASICAUTH_PASSWORD: pass
     depends_on:
       - mongo
-
-  kafka:
-    image: apache/kafka:latest
-    container_name: fastchat_kafka
-    restart: unless-stopped
-    ports:
-      - "9092:9092"
-    volumes:
-      - kafka_data:/var/lib/kafka/data
+    networks:
+      - fastchat-net
 
 volumes:
   mongo-data:
-  kafka_data:
     driver: local
+  logs:
+    driver: local
+
+networks:
+  fastchat-net:
+    external: true

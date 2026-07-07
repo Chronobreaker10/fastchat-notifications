@@ -3,19 +3,20 @@ import uuid
 from collections.abc import AsyncIterable
 from typing import Annotated
 
-from api import service
-from api.dependencies import CurrentUserDep, PubSubNotificationsDep
-from api.schemas import (
+from fastapi import Body, Request
+from fastapi.sse import EventSourceResponse, ServerSentEvent
+from faststream import AckPolicy
+from faststream.kafka.fastapi.fastapi import KafkaRouter
+
+from ..core.config import settings
+from . import service
+from .dependencies import CurrentUserDep, PubSubNotificationsDep
+from .schemas import (
     NotificationCreate,
     NotificationRead,
     NotificationUpdate,
     StatusResponse,
 )
-from core.config import settings
-from fastapi import Body, Request
-from fastapi.sse import EventSourceResponse, ServerSentEvent
-from faststream import AckPolicy
-from faststream.kafka.fastapi.fastapi import KafkaRouter
 
 router = KafkaRouter(
     bootstrap_servers=settings.kafka.bootstrap_servers,

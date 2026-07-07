@@ -4,12 +4,13 @@ from datetime import datetime
 from functools import cache
 from typing import Annotated
 
-from api.errors import UnauthorizedError
-from api.schemas import User
-from core.config import settings
-from core.pubsub_notifications import PubSubNotifications
-from core.security import validate_token
 from fastapi import Cookie, Depends
+
+from ..core.config import settings
+from ..core.pubsub_notifications import PubSubNotifications
+from ..core.security import validate_token
+from .errors import UnauthorizedError
+from .schemas import User
 
 
 async def get_current_user(

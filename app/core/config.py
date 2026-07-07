@@ -24,15 +24,21 @@ class ApiConfig(BaseModel):
 class CorsConfig(BaseModel):
     allowed_origins: list[str] = Field(
         default_factory=lambda: [
-            "http://localhost:5173",
-            "http://localhost:8080",
-            "http://localhost:8081",
+            # "http://localhost:5173",
+            # "http://localhost:8080",
+            # "http://localhost:8081",
+            # "http://localhost:80",
+            # "https://localhost",
+            # "http://localhost",
+            # "https://localhost:443",
+            "http://fastchat_proxy:80",
+            "https://fastchat_proxy:443",
         ]
     )
 
 
 class RunConfig(BaseModel):
-    scheme: Literal["http", "https"] = "http"
+    scheme: Literal["http", "https"] = "https"
     host: str = "localhost"
     port: int = 8001
 
@@ -43,10 +49,14 @@ class DatabaseConfig(BaseModel):
 
 
 class KafkaConfig(BaseModel):
-    bootstrap_servers: list[str] = ["localhost:9092"]
+    bootstrap_server: str = "localhost:9092"
     notifications_topic: str = "notifications"
     notifications_group: str = "notifications"
     fanout_notifications_topic: str = "fanout-notifications"
+
+    @property
+    def bootstrap_servers(self) -> list[str]:
+        return [self.bootstrap_server]
 
 
 class SecurityConfig(BaseModel):

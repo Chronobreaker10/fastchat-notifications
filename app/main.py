@@ -3,12 +3,13 @@ from contextlib import asynccontextmanager
 from typing import Any
 
 import uvicorn
-from api.errors import setup_exceptions
-from api.router import router
-from core.config import settings
-from core.database import setup_beanie
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+from .api.errors import setup_exceptions
+from .api.router import router
+from .core.config import settings
+from .core.database import setup_beanie
 
 
 @asynccontextmanager

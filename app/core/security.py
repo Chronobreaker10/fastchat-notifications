@@ -1,8 +1,9 @@
 import jwt
-from api.errors import UnauthorizedError
-from api.schemas import TokenData
-from core.config import settings
 from pydantic import ValidationError
+
+from ..api.errors import UnauthorizedError
+from ..api.schemas import TokenData
+from .config import settings
 
 
 def validate_token(token: str) -> TokenData:

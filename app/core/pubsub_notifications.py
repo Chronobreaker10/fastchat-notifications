@@ -1,7 +1,7 @@
 import asyncio
 from uuid import UUID
 
-from api.schemas import NotificationRead
+from ..api.schemas import NotificationRead
 
 type ChannelID = UUID
 type UserID = int

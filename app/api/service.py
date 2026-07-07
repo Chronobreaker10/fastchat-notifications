@@ -1,7 +1,8 @@
-from api.errors import ForbiddenError, NotificationNotFoundError
-from api.schemas import NotificationCreate, NotificationRead, NotificationUpdate, User
 from bson import ObjectId
-from core.models import Notification
+
+from ..core.models import Notification
+from .errors import ForbiddenError, NotificationNotFoundError
+from .schemas import NotificationCreate, NotificationRead, NotificationUpdate, User
 
 
 async def get_notification(notification_id: str) -> Notification:
