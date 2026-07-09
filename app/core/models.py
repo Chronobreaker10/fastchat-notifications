@@ -1,14 +1,16 @@
 from datetime import datetime
+from typing import Annotated
 
 from beanie import Document, Indexed
 
 
 class Notification(Document):
     body: str
-    created_at: Indexed(datetime)
-    chat_id: Indexed(str)
-    recipient_id: Indexed(int)
-    is_viewed: bool = False
+    created_at: Annotated[datetime, Indexed()]
+    chat_id: str
+    chat_name: str
+    recipient_id: Annotated[int, Indexed()]
+    is_viewed: Indexed(bool) = False
 
     class Settings:
         name = "notifications"

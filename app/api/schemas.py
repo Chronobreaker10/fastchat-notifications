@@ -10,6 +10,7 @@ class NotificationCreate(BaseModel):
     body: Annotated[str, Field(min_length=1, max_length=500, title="Текст уведомления")]
     created_at: Annotated[datetime, Field(title="Время отправки уведомления")]
     chat_id: Annotated[UUID, Field(title="Идентификатор связанного чата")]
+    chat_name: Annotated[str, Field(title="Имя связанного чата")]
     recipient_id: Annotated[int, Field(ge=1, title="Идентификатор получателя")]
 
     @field_serializer("chat_id")
