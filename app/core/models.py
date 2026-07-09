@@ -10,7 +10,7 @@ class Notification(Document):
     chat_id: str
     chat_name: str
     recipient_id: Annotated[int, Indexed()]
-    is_viewed: Indexed(bool) = False
+    is_viewed: bool = False
 
     class Settings:
         name = "notifications"
