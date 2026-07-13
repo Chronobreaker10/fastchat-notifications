@@ -1,9 +1,13 @@
+from __future__ import annotations
+
 import uuid
 from datetime import datetime
 from typing import Annotated
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_serializer
+
+from ..core.utils import get_msc_dt
 
 
 class NotificationCreate(BaseModel):
@@ -14,8 +18,8 @@ class NotificationCreate(BaseModel):
     recipient_id: Annotated[int, Field(ge=1, title="Идентификатор получателя")]
 
     @field_serializer("chat_id")
-    def convert_chat_id(self, value: UUID) -> str:
-        return str(value)
+    def convert_chat_id(self, v: UUID) -> str:
+        return str(v)
 
 
 class NotificationUpdate(BaseModel):
@@ -26,6 +30,10 @@ class NotificationRead(NotificationCreate, NotificationUpdate):
     id: Annotated[str, Field(title="Идентификатор уведомления")]
 
     model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer("created_at")
+    def created_at_to_msc_dt(self, v: datetime) -> datetime:
+        return get_msc_dt(v.replace(microsecond=0))
 
 
 class TokenData(BaseModel):
