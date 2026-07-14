@@ -31,9 +31,10 @@
 
 ## ✨ Запуск проекта
 
-Необходимо скопировать публичный ключ основного приложения в папку secret-keys:
- ``` bash  
-cp ../fastchat-backend/secret-keys/public.pem ./secret-keys/
+Необходимо скопировать публичный ключ основного приложения в папку secret_keys:
+ ``` bash
+mkdir secret_keys
+cp ../fastchat-backend/secret_keys/public.pem ./secret_keys/
 ```
 
 Создание docker-сети:
