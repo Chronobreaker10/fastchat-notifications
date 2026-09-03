@@ -2,7 +2,7 @@ from functools import cached_property
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel, Field, MongoDsn
+from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -44,8 +44,15 @@ class RunConfig(BaseModel):
 
 
 class DatabaseConfig(BaseModel):
-    dev_dsn: MongoDsn
+    host: str
+    port: int = 27017
+    user: str
+    password: str
     name: str = "notifications"
+
+    @cached_property
+    def url(self) -> str:
+        return f"mongodb://{self.user}:{self.password}@{self.host}:{self.port}"
 
 
 class KafkaConfig(BaseModel):
@@ -83,6 +90,7 @@ class Settings(BaseSettings):
         env_file=(".env.template", ".env"),
         case_sensitive=False,
         env_nested_delimiter="__",
+        extra="ignore",
     )
 
 

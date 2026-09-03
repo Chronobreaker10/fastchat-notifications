@@ -6,7 +6,7 @@ from .models import Notification
 
 
 async def setup_beanie() -> None:
-    client = AsyncMongoClient(str(settings.database.dev_dsn))
+    client = AsyncMongoClient(settings.database.url)
     await init_beanie(
         database=client[settings.database.name], document_models=[Notification]
     )

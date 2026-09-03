@@ -4,11 +4,12 @@ services:
     container_name: fastchat_notifications
     restart: unless-stopped
     env_file:
-      - .env.docker
+      - .env
     volumes:
       - logs:/app/logs
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
     ports:
       - "8001:8000"
     healthcheck:
@@ -42,31 +43,38 @@ services:
     image: mongo:latest
     container_name: mongodb_container
     restart: unless-stopped
-    ports:
-      - "27017:27017"
+    expose:
+      - "27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: rootadmin
-      MONGO_INITDB_ROOT_PASSWORD: secretpassword
+      MONGO_INITDB_ROOT_USERNAME: ${DATABASE__USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${DATABASE__PASSWORD}
     volumes:
       - mongo-data:/data/db
     networks:
       - fastchat-net
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:${DATABASE__PORT:-27017}/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
   mongo-express:
     image: mongo-express:latest
     container_name: mongo_express_container
     restart: unless-stopped
     ports:
-      - "8081:8081"
+      - "${MONGO_EXPRESS_PORT:-8081}:8081"
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: rootadmin
-      ME_CONFIG_MONGODB_ADMINPASSWORD: secretpassword
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${DATABASE__USER}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${DATABASE__PASSWORD}
       ME_CONFIG_MONGODB_SERVER: mongo
       ME_CONFIG_MONGODB_AUTH_DATABASE: admin
       ME_CONFIG_BASICAUTH_USERNAME: admin
       ME_CONFIG_BASICAUTH_PASSWORD: pass
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
     networks:
       - fastchat-net
 
